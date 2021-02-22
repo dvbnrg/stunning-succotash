@@ -38,7 +38,8 @@ func main() {
 
 func (s *server) CreateUser(ctx context.Context, user *pb.User) (*pb.User, error) {
 	log.Println("Creating User: %+v", user)
-	db := mgoconnect()
+	db, cancel := mgoconnect()
+	defer cancel()
 	collection := db.Database("Users").Collection("Users")
 	insertResult, err := collection.InsertOne(ctx, user)
 	if err != nil {
@@ -51,7 +52,8 @@ func (s *server) CreateUser(ctx context.Context, user *pb.User) (*pb.User, error
 
 func (s *server) GetUser(ctx context.Context, user *pb.User) (*pb.User, error) {
 	log.Println("Retreiving User: %+v", user)
-	db := mgoconnect()
+	db, cancel := mgoconnect()
+	defer cancel()
 	collection := db.Database("Users").Collection("Users")
 	err := collection.FindOne(ctx, user).Decode(&user)
 	if err != nil {
@@ -64,7 +66,8 @@ func (s *server) GetUser(ctx context.Context, user *pb.User) (*pb.User, error) {
 
 func (s *server) UpdateUser(ctx context.Context, user *pb.User) (*pb.User, error) {
 	log.Println("Updating User: %+v", user)
-	db := mgoconnect()
+	db, cancel := mgoconnect()
+	defer cancel()
 	collection := db.Database("Users").Collection("Users")
 	filter := bson.D{{}}
 	updateResult, err := collection.UpdateOne(ctx, filter, user)
@@ -78,7 +81,8 @@ func (s *server) UpdateUser(ctx context.Context, user *pb.User) (*pb.User, error
 
 func (s *server) ListUsers(e *emptypb.Empty, stream pb.UserService_ListUsersServer) error {
 	log.Println("Retreiving Users: %+v", stream)
-	db := mgoconnect()
+	db, cancel := mgoconnect()
+	defer cancel()
 	collection := db.Database("Users").Collection("Users")
 	filter := bson.D{{}}
 	ctx := stream.Context()
@@ -106,7 +110,8 @@ func (s *server) ListUsers(e *emptypb.Empty, stream pb.UserService_ListUsersServ
 
 func (s *server) DeleteUser(ctx context.Context, user *pb.User) (*emptypb.Empty, error) {
 	log.Println("Deleting User: %+v", user)
-	db := mgoconnect()
+	db, cancel := mgoconnect()
+	defer cancel()
 	collection := db.Database("Users").Collection("Users")
 	filter := bson.D{{}}
 	deleteResult, err := collection.DeleteOne(ctx, filter)
@@ -119,9 +124,8 @@ func (s *server) DeleteUser(ctx context.Context, user *pb.User) (*emptypb.Empty,
 }
 
 // Connect opens a db connection to Mongo
-func mgoconnect() (mgo *mongo.Client) {
+func mgoconnect() (mgo *mongo.Client, cancel context.CancelFunc) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	mgo, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		"mongodb+srv://justdave:supersecret@cluster0.xsmx6.gcp.mongodb.net/Users?retryWrites=true&w=majority",
 	))
