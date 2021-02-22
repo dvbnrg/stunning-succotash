@@ -2,7 +2,7 @@ syntax = "proto3";
 package userservice;
 
 import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
+// import "google/protobuf/timestamp.proto";
 
 option go_package = ".;pb";
 
@@ -13,9 +13,9 @@ message User {
     bool emailVerified = 4;
     string givenName = 5;
     string familyName = 6;
-    google.protobuf.Timestamp createdAt = 7;
-    google.protobuf.Timestamp updatedAt = 8;
-    google.protobuf.Timestamp deletedAt = 9;
+    string createdAt = 7;
+    string updatedAt = 8;
+    string deletedAt = 9;
 }
 
 service UserService {

@@ -37,6 +37,7 @@ func main() {
 }
 
 func (s *server) CreateUser(ctx context.Context, user *pb.User) (*pb.User, error) {
+	log.Println("Creating User: %+v", user)
 	db := mgoconnect()
 	collection := db.Database("Users").Collection("Users")
 	insertResult, err := collection.InsertOne(ctx, user)
@@ -49,6 +50,7 @@ func (s *server) CreateUser(ctx context.Context, user *pb.User) (*pb.User, error
 }
 
 func (s *server) GetUser(ctx context.Context, user *pb.User) (*pb.User, error) {
+	log.Println("Retreiving User: %+v", user)
 	db := mgoconnect()
 	collection := db.Database("Users").Collection("Users")
 	err := collection.FindOne(ctx, user).Decode(&user)
@@ -61,6 +63,7 @@ func (s *server) GetUser(ctx context.Context, user *pb.User) (*pb.User, error) {
 }
 
 func (s *server) UpdateUser(ctx context.Context, user *pb.User) (*pb.User, error) {
+	log.Println("Updating User: %+v", user)
 	db := mgoconnect()
 	collection := db.Database("Users").Collection("Users")
 	filter := bson.D{{}}
@@ -74,6 +77,7 @@ func (s *server) UpdateUser(ctx context.Context, user *pb.User) (*pb.User, error
 }
 
 func (s *server) ListUsers(e *emptypb.Empty, stream pb.UserService_ListUsersServer) error {
+	log.Println("Retreiving Users: %+v", stream)
 	db := mgoconnect()
 	collection := db.Database("Users").Collection("Users")
 	filter := bson.D{{}}
@@ -101,6 +105,7 @@ func (s *server) ListUsers(e *emptypb.Empty, stream pb.UserService_ListUsersServ
 }
 
 func (s *server) DeleteUser(ctx context.Context, user *pb.User) (*emptypb.Empty, error) {
+	log.Println("Deleting User: %+v", user)
 	db := mgoconnect()
 	collection := db.Database("Users").Collection("Users")
 	filter := bson.D{{}}
@@ -115,18 +120,13 @@ func (s *server) DeleteUser(ctx context.Context, user *pb.User) (*emptypb.Empty,
 
 // Connect opens a db connection to Mongo
 func mgoconnect() (mgo *mongo.Client) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	mgo, err := mongo.Connect(ctx, options.Client().ApplyURI(
-		"mongodb+srv://justdave:supersecret@cluster0.xsmx6.gcp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+		"mongodb+srv://justdave:supersecret@cluster0.xsmx6.gcp.mongodb.net/Users?retryWrites=true&w=majority",
 	))
 	if err != nil {
 		log.Println(err)
-		return
-	}
-	err = mgo.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Println("Database Connection Error")
 		return
 	}
 	return

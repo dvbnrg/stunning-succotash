@@ -8,7 +8,6 @@ import (
 	"userService/pb"
 
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -36,15 +35,35 @@ func main() {
 		EmailVerified: true,
 		GivenName:     "Dave",
 		FamilyName:    "Banerjee",
-		CreatedAt:     &timestamppb.Timestamp{},
-		UpdatedAt:     &timestamppb.Timestamp{},
-		DeletedAt:     &timestamppb.Timestamp{},
+		CreatedAt:     "",
+		UpdatedAt:     "",
+		DeletedAt:     "",
 	}
 
 	r, err := c.CreateUser(ctx, e)
 	if err != nil {
 		log.Fatalf("could not log: %v", err)
 	}
+
+	// r, err := c.GetUser(ctx, e)
+	// if err != nil {
+	// 	log.Fatalf("could not log: %v", err)
+	// }
+
+	// r, err := c.UpdateUser(ctx, e)
+	// if err != nil {
+	// 	log.Fatalf("could not log: %v", err)
+	// }
+
+	// r, err := c.ListUsers(ctx, e)
+	// if err != nil {
+	// 	log.Fatalf("could not log: %v", err)
+	// }
+
+	// r, err := c.DeleteUser(ctx, e)
+	// if err != nil {
+	// 	log.Fatalf("could not log: %v", err)
+	// }
 
 	log.Printf("User added: %t, at Time: %s", r.GetCreatedAt(), r.GetUpdatedAt())
 }
