@@ -45,10 +45,10 @@ func main() {
 		log.Fatalf("could not log: %v", err)
 	}
 
-	// r, err := c.GetUser(ctx, e)
-	// if err != nil {
-	// 	log.Fatalf("could not log: %v", err)
-	// }
+	r, err := c.GetUser(ctx, e)
+	if err != nil {
+		log.Fatalf("could not log: %v", err)
+	}
 
 	// r, err := c.UpdateUser(ctx, e)
 	// if err != nil {
